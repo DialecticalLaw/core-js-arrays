@@ -287,8 +287,10 @@ function distinct(arr) {
  *    createNDimensionalArray(4, 2) => [[[[0, 0], [0, 0]], [[0, 0], [0, 0]]], [[[0, 0], [0, 0]], [[0, 0], [0, 0]]]]
  *    createNDimensionalArray(1, 1) => [0]
  */
-function createNDimensionalArray(/* n, size */) {
-  throw new Error('Not implemented');
+function createNDimensionalArray(n, size) {
+  if (!n) return 0;
+  const arr = Array(size);
+  return arr.fill(createNDimensionalArray(n - 1, size));
 }
 
 /**
@@ -351,12 +353,25 @@ function calculateBalance(arr) {
  * @return {array} - An array of chunks.
  *
  * @example
- *    createChunks([1, 2, 3, 4, 5, 6, 7], 3) => [[1, 2, 3], [4, 5, 6], [7]]
+ *    createChunks([1, 2, _3_, 4, 5, _6_, 7], 3) => [[1, 2, 3], [4, 5, 6], [7]]
  *    createChunks(['a', 'b', 'c', 'd', 'e'], 2) => [['a', 'b'], ['c', 'd'], ['e']]
  *    createChunks([10, 20, 30, 40, 50], 1) => [[10], [20], [30], [40], [50]]
  */
-function createChunks(/* arr, chunkSize */) {
-  throw new Error('Not implemented');
+function createChunks(arr, chunkSize) {
+  const result = [[]];
+  let isNewArr = false;
+  let arrIndex = 0;
+  arr.map((item, index) => {
+    if (isNewArr) {
+      result.push([]);
+      arrIndex += 1;
+      isNewArr = false;
+    }
+    result[arrIndex].push(item);
+    if ((index + 1) % chunkSize === 0) isNewArr = true;
+    return item;
+  });
+  return result;
 }
 
 /**
@@ -369,10 +384,19 @@ function createChunks(/* arr, chunkSize */) {
  *    generateOdds(0) => []
  *    generateOdds(1) => [ 1 ]
  *    generateOdds(2) => [ 1, 3 ]
- *    generateOdds(5) => [ 1, 3, 5, 7, 9 ]
+ *    generateOdds(5) => [ 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21]
  */
-function generateOdds(/* len */) {
-  throw new Error('Not implemented');
+function generateOdds(len) {
+  if (!len) {
+    return [];
+  }
+  const arr = Array.from({ length: len });
+  const result = [];
+  arr.reduce((acc) => {
+    result.push(acc);
+    return acc + 2;
+  }, 1);
+  return result;
 }
 
 /**
@@ -387,8 +411,17 @@ function generateOdds(/* len */) {
  *   getElementByIndices(['one','two','three'], [2]) => 'three'  (arr[2])
  *   getElementByIndices([[[ 1, 2, 3]]], [ 0, 0, 1 ]) => 2        (arr[0][0][1])
  */
-function getElementByIndices(/* arr, indices */) {
-  throw new Error('Not implemented');
+function getElementByIndices(arr, indices) {
+  let filteredArr;
+  indices.map((itemInd, indexInd) => {
+    if (!indexInd) {
+      filteredArr = arr.filter((item, index) => index === itemInd).flat();
+      return itemInd;
+    }
+    filteredArr = filteredArr.filter((item, index) => index === itemInd).flat();
+    return itemInd;
+  });
+  return filteredArr;
 }
 
 /**
@@ -425,8 +458,21 @@ function getFalsyValuesCount(arr) {
  *                              [0,0,0,1,0],
  *                              [0,0,0,0,1]]
  */
-function getIdentityMatrix(/* n */) {
-  throw new Error('Not implemented');
+function getIdentityMatrix(n) {
+  let arr = Array.from({ length: n }, () => []);
+  arr = arr.map((item) => {
+    item.push('0'.repeat(n).split(''));
+    return item.flat();
+  });
+  let counter = 0;
+  return arr.map((item) => {
+    const newItem = item.map((itemNew, indexNew) => {
+      if (indexNew === counter) return 1;
+      return 0;
+    });
+    counter += 1;
+    return newItem;
+  });
 }
 
 /**
@@ -440,8 +486,13 @@ function getIdentityMatrix(/* n */) {
  *    getIndicesOfOddNumbers([2, 4, 6, 8, 10]) => []
  *    getIndicesOfOddNumbers([11, 22, 33, 44, 55]) => [0, 2, 4]
  */
-function getIndicesOfOddNumbers(/* numbers */) {
-  throw new Error('Not implemented');
+function getIndicesOfOddNumbers(numbers) {
+  const indexes = [];
+  numbers.map((item, index) => {
+    if (item % 2 !== 0) indexes.push(index);
+    return item;
+  });
+  return indexes;
 }
 
 /**
@@ -472,8 +523,27 @@ function getHexRGBValues(/* arr */) {
  *   getMaxItems([ 10, 2, 7, 5, 3, -5 ], 3) => [ 10, 7, 5 ]
  *   getMaxItems([ 10, 10, 10, 10 ], 3) => [ 10, 10, 10 ]
  */
-function getMaxItems(/* arr, n */) {
-  throw new Error('Not implemented');
+function getMaxItems(arr, n) {
+  if (!arr.length) return [];
+  const result = [];
+  let arrDuplicate = arr;
+  const count = Array(n).fill('d');
+  let max = Number.MIN_VALUE;
+  count.map(() => {
+    arrDuplicate.map((item) => {
+      if (item > max) max = item;
+      return item;
+    });
+    result.push(max);
+    const maxIndex = arrDuplicate.findIndex((item) => item === max);
+    arrDuplicate = [
+      ...arrDuplicate.slice(0, maxIndex),
+      ...arrDuplicate.slice(maxIndex + 1, arrDuplicate.length),
+    ];
+    max = Number.MIN_VALUE;
+    return undefined;
+  });
+  return result;
 }
 
 /**
